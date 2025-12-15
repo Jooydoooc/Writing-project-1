@@ -2,109 +2,1665 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>IELTS Writing Test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IELTS Writing Test - Set Three</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#fff; }
-    .header { display:flex; justify-content:space-between; padding:15px 30px; border-bottom:1px solid #ccc; }
-    .timer { font-weight:bold; color:#d32f2f; }
-    .container { display:flex; height: calc(100vh - 120px); }
-    .left, .right { width:50%; padding:20px; overflow-y:auto; }
-    textarea { width:100%; height:100%; font-size:16px; padding:10px; }
-    .tabs { display:flex; }
-    .tabs button { flex:1; padding:10px; font-weight:bold; cursor:pointer; }
-    .tabs button.active { background:#ccc; }
-    .submit { padding:12px 30px; margin:15px auto; display:block; font-size:16px; }
-    .image-container img { width:100%; border:1px solid #ccc; margin-top:10px; }
+    * { 
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #fff;
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+    }
+    
+    /* Mobile-specific styles - FULL SCREEN */
+    @media only screen and (max-width: 768px) {
+      html, body {
+        overflow: hidden;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+      }
+      
+      body {
+        font-size: 14px;
+        -webkit-text-size-adjust: 100%;
+      }
+      
+      #rulesScreen {
+        width: 100vw;
+        height: 100vh;
+        padding: 10px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .rules-container {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 100vh;
+        max-height: none;
+        padding: 20px;
+        margin: 0;
+        border-radius: 0;
+      }
+      
+      .header {
+        width: 100vw;
+        padding: 10px 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        position: relative;
+        border-bottom: 1px solid #ccc;
+        background: white;
+      }
+      
+      .header img {
+        height: 25px;
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      
+      .top-right-info {
+        align-items: flex-start;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      
+      .timer-display {
+        font-size: 18px;
+        padding: 8px 12px;
+        width: auto;
+      }
+      
+      .violation-counter {
+        font-size: 12px;
+        padding: 6px 10px;
+        width: auto;
+      }
+      
+      .student-name-display {
+        font-size: 12px;
+        line-height: 1.3;
+        width: 100%;
+        text-align: left;
+        background: #f8f9fa;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        order: 1;
+        margin-bottom: 10px;
+      }
+      
+      .test-info {
+        width: 100vw;
+        padding: 10px 15px;
+        font-size: 14px;
+        text-align: center;
+        background-color: #e9f7fe;
+        border-bottom: 1px solid #b8daff;
+      }
+      
+      .part-bar {
+        width: 100vw;
+        padding: 12px 15px;
+        font-size: 14px;
+        line-height: 1.4;
+        text-align: center;
+        background-color: #f2f4ec;
+        border-bottom: 1px solid #ccc;
+      }
+      
+      .main {
+        flex-direction: column;
+        width: 100vw;
+        height: calc(100vh - 260px) !important;
+        min-height: calc(100vh - 260px);
+        overflow: hidden;
+        position: relative;
+      }
+      
+      .left, .right {
+        width: 100vw !important;
+        padding: 15px;
+        min-width: 100vw !important;
+        max-width: 100vw !important;
+        resize: none !important;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .left {
+        height: 45vh !important;
+        min-height: 45vh;
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 3px solid #999;
+      }
+      
+      .right {
+        height: 55vh !important;
+        min-height: 55vh;
+        max-height: 55vh;
+        padding-top: 10px;
+      }
+      
+      textarea {
+        width: 100%;
+        height: calc(100% - 40px) !important;
+        min-height: calc(100% - 40px);
+        font-size: 16px;
+        padding: 12px;
+        resize: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: Arial, sans-serif;
+      }
+      
+      .image-container img {
+        width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        display: block;
+        margin: 10px auto;
+      }
+      
+      .word-count, .typing-speed {
+        width: 100%;
+        text-align: right;
+        padding-right: 5px;
+        margin-top: 5px;
+        font-size: 12px;
+      }
+      
+      .tab-buttons {
+        width: 100vw;
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+      }
+      
+      .tab-buttons button {
+        width: 50vw;
+        padding: 15px;
+        font-size: 16px;
+        min-height: 50px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        background: #eee;
+      }
+      
+      .tab-buttons button.active {
+        background: #d0d0d0;
+      }
+      
+      .submit-btn, .review-btn {
+        width: 100vw;
+        padding: 15px;
+        font-size: 16px;
+        margin: 0;
+        border-radius: 0;
+        min-height: 50px;
+        border: none;
+        border-top: 1px solid #ccc;
+      }
+      
+      .submit-btn {
+        background-color: #0078d7;
+        color: white;
+      }
+      
+      .review-btn {
+        background-color: #6c757d;
+        color: white;
+      }
+      
+      /* Mobile loading and status */
+      .loading {
+        width: 100vw;
+        padding: 15px;
+        text-align: center;
+      }
+      
+      .telegram-status, .submission-confirmation {
+        width: 100vw;
+        margin: 0;
+        border-radius: 0;
+        padding: 15px;
+        text-align: center;
+      }
+      
+      /* Mobile modals */
+      .modal {
+        width: 100vw;
+        height: 100vh;
+        padding: 20px;
+        background-color: rgba(0,0,0,0.9);
+      }
+      
+      .modal-content {
+        width: 90vw;
+        max-width: 90vw;
+        padding: 20px;
+        margin: auto;
+      }
+      
+      /* Mobile rules screen */
+      .teacher-selection, .name-input, .group-input {
+        width: 100%;
+        padding: 15px;
+        margin: 15px 0;
+        box-sizing: border-box;
+      }
+      
+      .radio-group {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+      }
+      
+      .start-button {
+        width: 100%;
+        padding: 18px;
+        font-size: 18px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+      
+      /* Prevent zoom on input focus iOS */
+      input, textarea, select {
+        font-size: 16px !important;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      
+      /* Hide desktop resizing handles */
+      .left, .right {
+        resize: none;
+        overflow-x: hidden;
+      }
+      
+      /* Mobile keyboard handling */
+      body.keyboard-open .left {
+        display: none !important;
+      }
+      
+      body.keyboard-open .right {
+        height: 70vh !important;
+      }
+    }
+    
+    @media only screen and (max-width: 480px) {
+      .header {
+        padding: 8px 12px;
+      }
+      
+      .timer-display {
+        font-size: 16px;
+        padding: 6px 10px;
+      }
+      
+      .violation-counter {
+        font-size: 11px;
+        padding: 5px 8px;
+      }
+      
+      .left, .right {
+        padding: 12px;
+      }
+      
+      textarea {
+        padding: 10px;
+        height: calc(100% - 35px) !important;
+      }
+      
+      .image-container img {
+        max-height: 180px;
+      }
+      
+      .tab-buttons button {
+        padding: 14px;
+        font-size: 15px;
+        min-height: 48px;
+      }
+    }
+    
+    @media only screen and (max-width: 320px) {
+      .rules-container h1 {
+        font-size: 20px;
+      }
+      
+      .rules-container h2 {
+        font-size: 18px;
+      }
+      
+      .tab-buttons button {
+        font-size: 14px;
+        padding: 12px 8px;
+      }
+    }
+    
+    /* Landscape mode for mobile */
+    @media only screen and (max-width: 768px) and (orientation: landscape) {
+      .main {
+        flex-direction: row !important;
+        height: calc(100vh - 180px) !important;
+      }
+      
+      .left, .right {
+        width: 50vw !important;
+        height: 100% !important;
+      }
+      
+      .left {
+        border-right: 3px solid #999 !important;
+        border-bottom: none !important;
+      }
+      
+      textarea {
+        height: calc(100% - 40px) !important;
+      }
+      
+      .tab-buttons {
+        height: 50px;
+      }
+      
+      .submit-btn, .review-btn {
+        height: 50px;
+      }
+    }
+
+    /* Original desktop styles (unchanged) */
+    .header {
+      background-color: white;
+      padding: 15px 30px;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+    .header img {
+      height: 30px;
+    }
+    .top-right-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+    }
+    .timer-display {
+      font-weight: bold;
+      font-size: 18px;
+      color: #d32f2f;
+      background-color: #f8f9fa;
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid #d32f2f;
+    }
+    .violation-counter {
+      background-color: #fff3cd;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .part-bar {
+      background-color: #f2f4ec;
+      padding: 15px 30px;
+      font-size: 16px;
+      border-bottom: 1px solid #ccc;
+    }
+    .tab-buttons {
+      display: flex;
+      justify-content: center;
+      border-top: 1px solid #ccc;
+      background: #f9f9f9;
+    }
+    .tab-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      background: #eee;
+    }
+    .tab-buttons button.active {
+      background: #d0d0d0;
+    }
+    .main {
+      display: flex;
+      height: calc(100vh - 240px);
+      overflow: hidden;
+    }
+    .left, .right {
+      padding: 20px 30px;
+      overflow-y: auto;
+    }
+    .left {
+      width: 50%;
+      border-right: 4px solid #999;
+      resize: horizontal;
+      overflow: auto;
+      min-width: 250px;
+    }
+    .right {
+      width: 50%;
+      resize: horizontal;
+      min-width: 250px;
+    }
+    .image-container img {
+      width: 100%;
+      height: auto;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    textarea {
+      width: 100%;
+      height: 100%;
+      font-size: 16px;
+      padding: 10px;
+      resize: none;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .word-count {
+      text-align: right;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .word-count.warning {
+      color: #d32f2f;
+    }
+    .submit-btn {
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px auto;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      border-radius: 4px;
+    }
+    .submit-btn:hover {
+      background-color: #106ebe;
+    }
+    .submit-btn:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    .review-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px auto;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      border-radius: 4px;
+    }
+    .review-btn:hover {
+      background-color: #5a6268;
+    }
+    
+    .test-info {
+      background-color: #e9f7fe;
+      padding: 10px 30px;
+      border-bottom: 1px solid #b8daff;
+      font-size: 14px;
+      color: #004085;
+    }
+    
+    #rulesScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .rules-container {
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .rules-container h1 {
+      color: #0078d7;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .rules-container h2 {
+      color: #333;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    .rules-container p, .rules-container ul {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    .rules-container ul {
+      padding-left: 20px;
+    }
+    .rules-container li {
+      margin-bottom: 8px;
+    }
+    .rules-container .warning {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .rules-container .warning strong {
+      color: #856404;
+    }
+    
+    .teacher-selection {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #e9f7fe;
+      border-radius: 8px;
+      border: 2px solid #0078d7;
+    }
+    .teacher-selection label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: bold;
+      color: #0078d7;
+    }
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: normal;
+      color: #333;
+      position: relative;
+      padding-left: 30px;
+    }
+    .radio-label input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .radio-custom {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #fff;
+      border-radius: 50%;
+      border: 2px solid #0078d7;
+      transition: all 0.3s ease;
+    }
+    .radio-label input[type="radio"]:checked ~ .radio-custom {
+      background-color: #0078d7;
+      border-color: #0078d7;
+    }
+    .radio-custom:after {
+      content: "";
+      position: absolute;
+      display: none;
+      top: 4px;
+      left: 4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+    .radio-label input[type="radio"]:checked ~ .radio-custom:after {
+      display: block;
+    }
+    .radio-label:hover .radio-custom {
+      border-color: #005a9e;
+      transform: scale(1.1);
+    }
+    
+    .name-input, .group-input {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #e9f9fe;
+      border-radius: 8px;
+      border: 2px solid #0078d7;
+    }
+    .name-input label, .group-input label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #0078d7;
+    }
+    .name-input input, .group-input input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .name-input input:focus, .group-input input:focus {
+      outline: none;
+      border-color: #0078d7;
+      box-shadow: 0 0 5px rgba(0,120,215,0.3);
+    }
+    .start-button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .start-button:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    .start-button:hover:not(:disabled) {
+      background-color: #218838;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .modal h2 {
+      color: #d32f2f;
+      margin-top: 0;
+    }
+    .modal p {
+      margin: 20px 0;
+      line-height: 1.5;
+    }
+    .modal button {
+      background-color: #d32f2f;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    #testContainer {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 10px;
+      color: #0078d7;
+    }
+    
+    .task-content {
+      margin-top: 15px;
+    }
+    .task-content p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .task-content .task-instructions {
+      color: #666;
+      font-style: italic;
+      margin-top: 10px;
+    }
+    
+    .submission-confirmation {
+      text-align: center;
+      padding: 10px;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      border-radius: 4px;
+      margin: 10px 30px;
+    }
+    
+    .typing-speed {
+      text-align: right;
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .typing-speed.warning {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+    
+    .student-name-display {
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .telegram-status {
+      text-align: center;
+      padding: 10px;
+      margin: 10px 30px;
+      border-radius: 4px;
+    }
+    
+    .telegram-status.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .telegram-status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    /* Hide mobile elements on desktop */
+    .mobile-only {
+      display: none;
+    }
+    
+    @media only screen and (max-width: 768px) {
+      .mobile-only {
+        display: block;
+      }
+      .desktop-only {
+        display: none;
+      }
+    }
   </style>
 </head>
-
 <body>
 
-<div class="header">
-  <div id="studentInfo"></div>
-  <div class="timer" id="timer">60:00</div>
-</div>
+  <div id="rulesScreen">
+    <div class="rules-container">
+      <h1>IELTS Writing Test - Set Three</h1>
+      <h2>Test Rules and Instructions</h2>
+      <p>Please read the following rules carefully before starting your IELTS Writing Test.</p>
+      
+      <div class="mobile-only" style="background: #e9f9fe; padding: 12px; border-radius: 6px; margin: 15px 0; border: 2px solid #0078d7;">
+        <strong style="color: #0078d7;">📱 Mobile Users:</strong> For best experience, use <strong>landscape mode</strong> (turn phone sideways) for writing. The test will use the full screen.
+      </div>
+      
+      <h2>Test Structure</h2>
+      <p>The IELTS Writing Test consists of two tasks:</p>
+      <ul>
+        <li><strong>Task 1:</strong> You should spend about 20 minutes on this task. Write at least 150 words.</li>
+        <li><strong>Task 2:</strong> You should spend about 40 minutes on this task. Write at least 250 words.</li>
+      </ul>
+      
+      <h2>Test Duration</h2>
+      <p>The total time for the Writing Test is 60 minutes. The timer will start when you click "I Understand" and cannot be paused.</p>
+      
+      <h2>Important Rules</h2>
+      <ul>
+        <li>You must complete both writing tasks within the 60-minute time limit.</li>
+        <li>You must write your answers in the provided text areas.</li>
+        <li>You can switch between Task 1 and Task 2 using the tabs at the bottom of the screen.</li>
+        <li>Your work will be automatically saved as a PDF when you click "Submit and Save as PDF" or when time expires.</li>
+        <li>Your answers will be sent to the examiner via Telegram for evaluation.</li>
+      </ul>
+      
+      <div class="warning">
+        <h2>⚠️ Test Security Rules</h2>
+        <p><strong>Important:</strong> To maintain test integrity, the following restrictions apply:</p>
+        <ul>
+          <li>You <strong>must not</strong> switch to other browser tabs, applications, or windows during the test.</li>
+          <li>You <strong>must not</strong> use any external resources, dictionaries, or assistance.</li>
+          <li>You <strong>must not</strong> copy, paste, or use keyboard shortcuts to open new tabs or windows.</li>
+          <li>You <strong>must not</strong> type at unrealistically high speeds or paste pre-written content.</li>
+          <li>If you attempt to leave the test window or type too fast, you will receive a warning.</li>
+          <li><strong>Two violations will result in automatic test termination and submission.</strong></li>
+        </ul>
+      </div>
+      
+      <h2>Technical Requirements</h2>
+      <ul>
+        <li>Ensure you have a stable internet connection throughout the test.</li>
+        <li>Do not refresh the page or use the browser's back button during the test.</li>
+        <li>Your responses will be saved automatically in case of accidental page closure.</li>
+      </ul>
 
-<div class="tabs">
-  <button class="active" onclick="switchTask(1)" id="tab1">Task 1</button>
-  <button onclick="switchTask(2)" id="tab2">Task 2</button>
-</div>
+      <div class="teacher-selection">
+        <label>Select Your Teacher (Required):</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="teacher" value="Mr Doniyor" required>
+            <span class="radio-custom"></span>
+            Mr Doniyor
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="teacher" value="Mr Xurshid" required>
+            <span class="radio-custom"></span>
+            Mr Xurshid
+          </label>
+        </div>
+      </div>
 
-<div class="container" id="task1">
-  <div class="left">
-    <h3>Writing Task 1</h3>
-    <p><strong>The chart shows the water levels in reservoirs of six cities in Australia in October 2009 and October 2010.</strong></p>
-    <p><em>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</em></p>
-    <p>Write at least 150 words.</p>
+      <div class="name-input">
+        <label for="studentName">Enter Your Full Name (Required):</label>
+        <input type="text" id="studentName" placeholder="Please enter your full name" required>
+        <small style="color: #666; display: block; margin-top: 5px;">Your name will be included in the test submission and PDF.</small>
+      </div>
 
-    <div class="image-container">
-      <img src="https://i.ibb.co/Fk3qNy96/2025-12-15-10-29-41.jpg">
+      <div class="group-input">
+        <label for="groupName">Enter Your Group Name (Required):</label>
+        <input type="text" id="groupName" placeholder="Please enter your group/class name" required>
+        <small style="color: #666; display: block; margin-top: 5px;">Example: IELTS Group 3, Morning Class, etc.</small>
+      </div>
+      
+      <p>By clicking "I Understand" below, you acknowledge that you have read and agree to these rules, and you are ready to begin your IELTS Writing Test.</p>
+      
+      <button class="start-button" id="startButton" onclick="startTest()" disabled>I Understand - Start Test</button>
     </div>
   </div>
 
-  <div class="right">
-    <textarea id="answer1" placeholder="Write Task 1 here..."></textarea>
+  <div id="testContainer">
+    <div class="test-info">
+      <strong>IELTS Writing Test - Set Three</strong>
+      <div class="mobile-only" style="font-size: 12px; margin-top: 3px; color: #666;">Full Screen Mode Active</div>
+    </div>
+    
+    <div class="header">
+      <div class="student-name-display" id="studentNameDisplay"></div>
+      <div class="top-right-info">
+        <div class="timer-display" id="timer">60:00</div>
+        <div class="violation-counter" id="violationCounter">Violations: 0/2</div>
+      </div>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/IELTS_logo.svg/2560px-IELTS_logo.svg.png" alt="IELTS">
+    </div>
+
+    <div id="partBar" class="part-bar">
+      Part 1<br>
+      You should spend about 20 minutes on this task. Write at least 150 words.
+    </div>
+
+    <div class="main" id="mainContainer">
+      <div class="left" id="left1">
+        <div class="task-content">
+          <p><strong>The chart shows the water levels in reservoirs of six cities in Australia in October 2009 and October 2010.</strong></p>
+          <p class="task-instructions">Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</p>
+          <p class="task-instructions">Write at least 150 words.</p>
+          <div class="image-container">
+            <img src="https://i.ibb.co/Fk3qNy96/2025-12-15-10-29-41.jpg" alt="Water Levels in Australian Reservoirs">
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <textarea id="textarea1" spellcheck="false" placeholder="Write your Task 1 response here..." oninput="updateWordCount('1')" onkeydown="handleTyping('1')" onpaste="handlePaste('1')"></textarea>
+        <div class="word-count" id="count1">Words: 0</div>
+        <div class="typing-speed" id="speed1">Speed: 0 WPM</div>
+      </div>
+    </div>
+
+    <div class="main" id="mainContainer2" style="display: none;">
+      <div class="left" id="left2">
+        <div class="task-content">
+          <p><strong>Some people believe that competitive sports, both team and individual, have no place in the school curriculum. To what extent do you agree or disagree?</strong></p>
+          <p class="task-instructions">Give reasons for your answer and include any relevant examples from your own knowledge or experience.</p>
+          <p class="task-instructions">Write at least 250 words.</p>
+        </div>
+      </div>
+      <div class="right">
+        <textarea id="textarea2" spellcheck="false" placeholder="Write your Task 2 response here..." oninput="updateWordCount('2')" onkeydown="handleTyping('2')" onpaste="handlePaste('2')"></textarea>
+        <div class="word-count" id="count2">Words: 0</div>
+        <div class="typing-speed" id="speed2">Speed: 0 WPM</div>
+      </div>
+    </div>
+
+    <div class="loading" id="loadingIndicator">Sending answers to examiner... Please wait.</div>
+    
+    <div id="telegramStatus" class="telegram-status" style="display: none;"></div>
+    
+    <div id="submissionConfirmation" class="submission-confirmation" style="display: none;">
+      Test submitted successfully! You can now review your answers.
+    </div>
+    
+    <button class="submit-btn" id="submitButton" onclick="submitTest()">Submit and Save as PDF</button>
+    <button class="review-btn" id="reviewButton" onclick="reviewTest()" style="display: none;">Review Only</button>
+
+    <div class="tab-buttons">
+      <button id="tab1" class="active" onclick="switchTab(1)">Part 1</button>
+      <button id="tab2" onclick="switchTab(2)">Part 2</button>
+    </div>
   </div>
-</div>
 
-<div class="container" id="task2" style="display:none;">
-  <div class="left">
-    <h3>Writing Task 2</h3>
-    <p><strong>Some people believe that competitive sports, both team and individual, have no place in the school curriculum.  
-    To what extent do you agree or disagree?</strong></p>
-    <p>Write at least 250 words.</p>
+  <div id="warningModal" class="modal">
+    <div class="modal-content">
+      <h2>Warning: Test Violation</h2>
+      <p>You have switched to another application or tab during the test.</p>
+      <p>This is a violation of test rules. Your test will be automatically submitted now.</p>
+      <button onclick="forceSubmit()">OK</button>
+    </div>
   </div>
 
-  <div class="right">
-    <textarea id="answer2" placeholder="Write Task 2 here..."></textarea>
+  <div id="typingWarningModal" class="modal">
+    <div class="modal-content">
+      <h2>Warning: Unusual Typing Pattern Detected</h2>
+      <p>Your typing speed appears to be unusually high, which may indicate pasting content or using assistance.</p>
+      <p>Please ensure you are typing your own responses. Further violations will result in test termination.</p>
+      <button onclick="closeTypingWarning()">I Understand</button>
+    </div>
   </div>
-</div>
 
-<button class="submit" onclick="submitTest()">Submit</button>
+  <div id="mobileLandscapeModal" class="modal">
+    <div class="modal-content">
+      <h2>📱 Mobile Writing Tip</h2>
+      <p>For the best writing experience on mobile, we recommend:</p>
+      <ul style="text-align: left; margin: 20px 0;">
+        <li>Turn your phone to <strong>landscape mode</strong> (horizontal)</li>
+        <li>This gives you more space to see the question and write</li>
+        <li>Use both thumbs for faster typing</li>
+      </ul>
+      <p><small>You can continue in portrait mode, but landscape is better for writing.</small></p>
+      <button onclick="closeMobileLandscapeModal()">Continue Anyway</button>
+      <button onclick="requestFullscreen()" style="background: #0078d7; margin-top: 10px;">Switch to Landscape</button>
+    </div>
+  </div>
 
-<script>
-let time = 3600;
-let timer = setInterval(() => {
-  time--;
-  const m = Math.floor(time/60);
-  const s = time%60;
-  document.getElementById("timer").textContent =
-    `${m}:${s<10?"0":""}${s}`;
-  if(time<=0){ clearInterval(timer); submitTest(); }
-},1000);
+  <script>
+    let chosenTask1 = { 
+      question: "The chart shows the water levels in reservoirs of six cities in Australia in October 2009 and October 2010.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.", 
+      image: "https://i.ibb.co/Fk3qNy96/2025-12-15-10-29-41.jpg" 
+    };
+    let chosenTask2 = "Some people believe that competitive sports, both team and individual, have no place in the school curriculum. To what extent do you agree or disagree?";
+    let totalSeconds = 60 * 60;
+    let isTestActive = false;
+    let warningCount = 0;
+    const maxWarnings = 2;
+    let timer;
+    let studentName = "";
+    let teacherName = "";
+    let groupName = "";
+    let isSubmitted = false;
+    let violationDetected = false;
+    let isMobileDevice = false;
+    let isLandscape = false;
 
-function switchTask(n){
-  document.getElementById("task1").style.display = n===1?"flex":"none";
-  document.getElementById("task2").style.display = n===2?"flex":"none";
-  document.getElementById("tab1").classList.toggle("active",n===1);
-  document.getElementById("tab2").classList.toggle("active",n===2);
-}
+    let violations = {
+      tabSwitching: 0,
+      appSwitching: 0,
+      highTypingSpeed: 0,
+      pasteDetected: 0,
+      rapidKeystrokes: 0,
+      total: 0
+    };
 
-async function submitTest(){
-  const msg = `
-📝 IELTS WRITING SUBMISSION
+    let typingData = {
+      task1: {
+        lastKeyTime: 0,
+        lastWordCount: 0,
+        keystrokes: 0,
+        lastCalculationTime: 0,
+        currentSpeed: 0,
+        speedViolations: 0,
+        pasteEvents: 0
+      },
+      task2: {
+        lastKeyTime: 0,
+        lastWordCount: 0,
+        keystrokes: 0,
+        lastCalculationTime: 0,
+        currentSpeed: 0,
+        speedViolations: 0,
+        pasteEvents: 0
+      }
+    };
 
-TASK 1:
-${document.getElementById("answer1").value}
+    const SPEED_THRESHOLD = 120;
+    const PASTE_THRESHOLD = 10;
+    const RAPID_KEYSTROKE_THRESHOLD = 50;
+    const MAX_SPEED_VIOLATIONS = 2;
 
-TASK 2:
-${document.getElementById("answer2").value}
+    function initializePage() {
+      // Detect mobile device
+      isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Detect initial orientation
+      isLandscape = window.innerWidth > window.innerHeight;
+      
+      document.getElementById("rulesScreen").style.display = "flex";
+      document.getElementById("testContainer").style.display = "none";
+      
+      const studentNameInput = document.getElementById("studentName");
+      const groupNameInput = document.getElementById("groupName");
+      const startButton = document.getElementById("startButton");
+      const teacherRadios = document.querySelectorAll('input[name="teacher"]');
+      
+      // Make inputs larger for mobile touch
+      if (isMobileDevice) {
+        studentNameInput.style.fontSize = "16px";
+        groupNameInput.style.fontSize = "16px";
+        studentNameInput.style.padding = "12px";
+        groupNameInput.style.padding = "12px";
+        studentNameInput.style.minHeight = "44px";
+        groupNameInput.style.minHeight = "44px";
+      }
+      
+      function updateStartButton() {
+        const isTeacherSelected = Array.from(teacherRadios).some(radio => radio.checked);
+        const isNameValid = studentNameInput.value.trim().length >= 2;
+        const isGroupValid = groupNameInput.value.trim().length >= 1;
+        startButton.disabled = !(isTeacherSelected && isNameValid && isGroupValid);
+      }
+      
+      studentNameInput.addEventListener("input", updateStartButton);
+      groupNameInput.addEventListener("input", updateStartButton);
+      
+      teacherRadios.forEach(radio => {
+        radio.addEventListener("change", updateStartButton);
+      });
+      
+      // Enter key to start test
+      document.getElementById("studentName").addEventListener("keypress", function(e) {
+        if (e.key === "Enter" && !startButton.disabled) {
+          startTest();
+        }
+      });
+      
+      document.getElementById("groupName").addEventListener("keypress", function(e) {
+        if (e.key === "Enter" && !startButton.disabled) {
+          startTest();
+        }
+      });
+      
+      // Auto-focus first input
+      setTimeout(() => {
+        studentNameInput.focus();
+      }, 500);
+      
+      // Listen for orientation changes
+      window.addEventListener("resize", handleResize);
+      window.addEventListener("orientationchange", handleOrientationChange);
+    }
+    
+    function handleResize() {
+      isLandscape = window.innerWidth > window.innerHeight;
+    }
+    
+    function handleOrientationChange() {
+      setTimeout(() => {
+        isLandscape = window.innerWidth > window.innerHeight;
+      }, 100);
+    }
+    
+    function requestFullscreen() {
+      if (isMobileDevice) {
+        // Try to request fullscreen
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          document.documentElement.msRequestFullscreen();
+        }
+        
+        // Try to lock orientation to landscape
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(() => {
+            console.log('Orientation lock not supported');
+          });
+        }
+      }
+      closeMobileLandscapeModal();
+    }
 
-⏱ Time left: ${time}s
-`;
+    function startTest() {
+      const selectedTeacher = document.querySelector('input[name="teacher"]:checked');
+      studentName = document.getElementById("studentName").value.trim();
+      groupName = document.getElementById("groupName").value.trim();
+      
+      if (!selectedTeacher) {
+        alert("Please select your teacher to start the test.");
+        return;
+      }
+      
+      if (studentName.length < 2) {
+        alert("Please enter your full name to start the test.");
+        return;
+      }
+      
+      if (groupName.length < 1) {
+        alert("Please enter your group name to start the test.");
+        return;
+      }
+      
+      teacherName = selectedTeacher.value;
+      
+      document.getElementById("rulesScreen").style.display = "none";
+      document.getElementById("testContainer").style.display = "block";
+      isTestActive = true;
+      
+      // Display student info
+      document.getElementById("studentNameDisplay").innerHTML = 
+        `Teacher: ${teacherName}<br>Student: ${studentName}<br>Group: ${groupName}`;
+        
+      updateViolationCounter();
+      startTimer();
+      activateAntiCheating();
+      initializeTypingMonitoring();
+      
+      // Show mobile landscape suggestion if on mobile and in portrait
+      if (isMobileDevice && !isLandscape) {
+        setTimeout(() => {
+          document.getElementById("mobileLandscapeModal").style.display = "flex";
+        }, 1000);
+      }
+      
+      // Set full width for mobile
+      if (isMobileDevice) {
+        document.getElementById("testContainer").style.width = "100vw";
+        document.getElementById("testContainer").style.height = "100vh";
+        
+        // Adjust textarea heights
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+          textarea.style.height = isLandscape ? "calc(100% - 40px)" : "calc(100% - 40px)";
+        });
+      }
+    }
 
-  await fetch("/api/telegram",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ message: msg })
-  });
+    function closeMobileLandscapeModal() {
+      document.getElementById("mobileLandscapeModal").style.display = "none";
+    }
 
-  alert("Submitted successfully!");
-}
-</script>
+    function updateViolationCounter() {
+      document.getElementById("violationCounter").textContent = `Violations: ${warningCount}/${maxWarnings}`;
+      if (warningCount > 0) {
+        document.getElementById("violationCounter").style.backgroundColor = "#f8d7da";
+        document.getElementById("violationCounter").style.color = "#721c24";
+        document.getElementById("violationCounter").style.borderColor = "#f5c6cb";
+      }
+    }
 
+    function initializeTypingMonitoring() {
+      setInterval(() => {
+        calculateTypingSpeed('1');
+        calculateTypingSpeed('2');
+      }, 3000);
+    }
+
+    function handleTyping(task) {
+      if (!isTestActive || isSubmitted) return;
+      
+      const now = Date.now();
+      const data = typingData[`task${task}`];
+      
+      if (data.lastKeyTime > 0) {
+        const timeDiff = now - data.lastKeyTime;
+        if (timeDiff < RAPID_KEYSTROKE_THRESHOLD) {
+          violations.rapidKeystrokes++;
+        }
+      }
+      
+      data.lastKeyTime = now;
+      data.keystrokes++;
+    }
+
+    function handlePaste(task) {
+      if (!isTestActive || isSubmitted) return;
+      
+      const data = typingData[`task${task}`];
+      const textarea = document.getElementById(`textarea${task}`);
+      const beforePasteWords = textarea.value.trim().split(/\s+/).length;
+      
+      setTimeout(() => {
+        const afterPasteWords = textarea.value.trim().split(/\s+/).length;
+        const wordIncrease = afterPasteWords - beforePasteWords;
+        
+        if (wordIncrease > PASTE_THRESHOLD) {
+          data.pasteEvents++;
+          violations.pasteDetected++;
+          handleTypingViolation(task, `Pasted ${wordIncrease} words detected`);
+        }
+      }, 100);
+    }
+
+    function calculateTypingSpeed(task) {
+      const data = typingData[`task${task}`];
+      const now = Date.now();
+      const textarea = document.getElementById(`textarea${task}`);
+      const currentWordCount = textarea.value.trim().split(/\s+/).length;
+      
+      if (data.lastCalculationTime > 0) {
+        const timeDiff = (now - data.lastCalculationTime) / 1000 / 60;
+        const wordDiff = currentWordCount - data.lastWordCount;
+        
+        if (timeDiff > 0) {
+          data.currentSpeed = Math.round(wordDiff / timeDiff);
+          
+          const speedElement = document.getElementById(`speed${task}`);
+          speedElement.textContent = `Speed: ${data.currentSpeed} WPM`;
+          
+          if (data.currentSpeed > SPEED_THRESHOLD && wordDiff > 5) {
+            speedElement.classList.add('warning');
+            violations.highTypingSpeed++;
+            handleTypingViolation(task, `High typing speed: ${data.currentSpeed} WPM`);
+          } else {
+            speedElement.classList.remove('warning');
+          }
+        }
+      }
+      
+      data.lastCalculationTime = now;
+      data.lastWordCount = currentWordCount;
+      data.keystrokes = 0;
+    }
+
+    function handleTypingViolation(task, reason) {
+      const data = typingData[`task${task}`];
+      data.speedViolations++;
+      
+      if (data.speedViolations >= MAX_SPEED_VIOLATIONS) {
+        handleViolation('typing', reason);
+        data.speedViolations = 0;
+      } else if (data.speedViolations === 1) {
+        document.getElementById("typingWarningModal").style.display = "flex";
+      }
+    }
+
+    function closeTypingWarning() {
+      document.getElementById("typingWarningModal").style.display = "none";
+    }
+
+    function startTimer() {
+      const timerDisplay = document.getElementById("timer");
+      timer = setInterval(() => {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        timerDisplay.textContent = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+        
+        if (totalSeconds <= 300) {
+          timerDisplay.style.color = "#d32f2f";
+          timerDisplay.style.fontSize = isMobileDevice ? "20px" : "22px";
+          timerDisplay.style.fontWeight = "bold";
+        }
+        
+        if (totalSeconds === 0) {
+          clearInterval(timer);
+          if (!isSubmitted) {
+            if (isMobileDevice) {
+              alert("⏰ Time is up! Your work will be saved automatically.");
+            } else {
+              alert("Time is up! Your work will be saved automatically.");
+            }
+            submitTest();
+          }
+          isTestActive = false;
+        }
+        totalSeconds--;
+      }, 1000);
+    }
+
+    function activateAntiCheating() {
+      document.addEventListener("visibilitychange", function() {
+        if (document.hidden && isTestActive && !violationDetected) {
+          violations.tabSwitching++;
+          handleViolation('tab_switch', 'Tab switching detected');
+        }
+      });
+
+      window.addEventListener("blur", function() {
+        if (isTestActive && !violationDetected) {
+          violations.appSwitching++;
+          handleViolation('app_switch', 'Application switching detected');
+        }
+      });
+    }
+
+    function handleViolation(type, reason) {
+      violationDetected = true;
+      violations.total++;
+      
+      warningCount++;
+      updateViolationCounter();
+      
+      if (warningCount >= maxWarnings) {
+        document.getElementById("warningModal").style.display = "flex";
+      } else {
+        const message = `Warning ${warningCount}/${maxWarnings}: ${getViolationMessage(type)} \n\nNext violation will result in automatic test termination.`;
+        alert(message);
+        
+        setTimeout(() => {
+          violationDetected = false;
+        }, 1000);
+      }
+    }
+
+    function getViolationMessage(type) {
+      const messages = {
+        'tab_switch': 'Switching browser tabs is not allowed during the test.',
+        'app_switch': 'Switching to other applications is not allowed during the test.',
+        'typing': 'Unusual typing pattern detected. Please ensure you are typing your own responses.',
+        'default': 'Test rule violation detected.'
+      };
+      return messages[type] || messages.default;
+    }
+
+    function updateWordCount(part) {
+      const text = document.getElementById("textarea" + part).value.trim();
+      const wordCount = text === "" ? 0 : text.split(/\s+/).length;
+      const countElement = document.getElementById("count" + part);
+      countElement.textContent = "Words: " + wordCount;
+      
+      if ((part === "1" && wordCount < 150) || (part === "2" && wordCount < 250)) {
+        countElement.classList.add("warning");
+      } else {
+        countElement.classList.remove("warning");
+      }
+    }
+
+    function switchTab(part) {
+      document.getElementById("mainContainer").style.display = part === 1 ? "flex" : "none";
+      document.getElementById("mainContainer2").style.display = part === 2 ? "flex" : "none";
+
+      document.getElementById("tab1").classList.remove("active");
+      document.getElementById("tab2").classList.remove("active");
+      document.getElementById("tab" + part).classList.add("active");
+
+      const partText = part === 1
+        ? "Part 1<br>You should spend about 20 minutes on this task. Write at least 150 words."
+        : "Part 2<br>You should spend about 40 minutes on this task. Write at least 250 words.";
+
+      document.getElementById("partBar").innerHTML = partText;
+      
+      // Focus the textarea if on mobile
+      if (isMobileDevice) {
+        setTimeout(() => {
+          const textarea = document.getElementById(`textarea${part}`);
+          if (textarea) {
+            textarea.focus();
+          }
+        }, 100);
+      }
+    }
+
+    async function sendToTelegram(message) {
+      try {
+        console.log('Starting Telegram send...');
+        
+        const response = await fetch('/api/telegram', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: message,
+            studentName: studentName,
+            teacherName: teacherName,
+            groupName: groupName
+          })
+        });
+
+        const result = await response.json();
+        console.log('Telegram result:', result);
+        
+        return result;
+      } catch (error) {
+        console.error('Telegram error:', error);
+        return { 
+          success: false, 
+          error: error.message 
+        };
+      }
+    }
+
+    async function submitTest() {
+      if (isSubmitted) {
+        alert("Test has already been submitted. You can only review your answers now.");
+        return;
+      }
+      
+      document.getElementById("loadingIndicator").style.display = "block";
+      document.getElementById("submitButton").disabled = true;
+      
+      const task1Answer = document.getElementById("textarea1").value;
+      const task2Answer = document.getElementById("textarea2").value;
+      const task1WordCount = task1Answer.trim() === "" ? 0 : task1Answer.trim().split(/\s+/).length;
+      const task2WordCount = task2Answer.trim() === "" ? 0 : task2Answer.trim().split(/\s+/).length;
+      const totalWords = task1WordCount + task2WordCount;
+      const timeUsed = Math.floor((60 * 60 - totalSeconds) / 60);
+      const secondsUsed = (60 * 60 - totalSeconds) % 60;
+      
+      const telegramMessage = `📝 IELTS WRITING TEST SUBMITTED
+
+👤 STUDENT INFORMATION
+• Name: ${studentName}
+• Teacher: ${teacherName}
+• Group: ${groupName}
+• Test: IELTS Writing Test - Set Three
+• Timestamp: ${new Date().toLocaleString()}
+• Time Used: ${timeUsed}m ${secondsUsed}s
+• Device: ${isMobileDevice ? '📱 Mobile' : '💻 Desktop'}
+• Orientation: ${isMobileDevice ? (isLandscape ? 'Landscape' : 'Portrait') : 'Desktop'}
+
+📋 TASK 1 - CHART DESCRIPTION
+Question:
+The chart shows the water levels in reservoirs of six cities in Australia in October 2009 and October 2010.
+
+Summarise the information by selecting and reporting the main features, and make comparisons where relevant.
+
+Write at least 150 words.
+
+📝 Student's Answer:
+${task1Answer}
+
+📊 Task 1 Statistics:
+• Words: ${task1WordCount}
+• Status: ${task1WordCount < 150 ? "❌ BELOW MINIMUM" : "✅ MEETS REQUIREMENT"}
+
+📝 TASK 2 - ESSAY WRITING
+Question:
+Some people believe that competitive sports, both team and individual, have no place in the school curriculum. To what extent do you agree or disagree?
+
+📝 Student's Answer:
+${task2Answer}
+
+📊 Task 2 Statistics:
+• Words: ${task2WordCount}
+• Status: ${task2WordCount < 250 ? "❌ BELOW MINIMUM" : "✅ MEETS REQUIREMENT"}
+
+📈 OVERALL STATISTICS
+• Total Words Written: ${totalWords}
+• Task 1: ${task1WordCount} words ${task1WordCount < 150 ? "❌" : "✅"}
+• Task 2: ${task2WordCount} words ${task2WordCount < 250 ? "❌" : "✅"}
+
+🚨 VIOLATION REPORT
+• Total Violations: ${violations.total}
+• Tab Switching: ${violations.tabSwitching}
+• App Switching: ${violations.appSwitching}
+• High Typing Speed: ${violations.highTypingSpeed}
+• Paste Detected: ${violations.pasteDetected}
+• Rapid Keystrokes: ${violations.rapidKeystrokes}
+• Final Warnings: ${warningCount}/${maxWarnings}
+
+💾 SYSTEM INFORMATION
+• PDF Generated: Yes
+• Submission Method: ${warningCount >= maxWarnings ? "⚠️ FORCED (Violations)" : "✅ Normal"}
+• Device Type: ${isMobileDevice ? 'Mobile' : 'Desktop'}
+• Browser: ${navigator.userAgent.substring(0, 50)}...
+• Platform: ${navigator.platform}
+• Test Completion: ${totalSeconds === 0 ? "⏰ Time Expired" : "✅ Manual Submission"}
+
+---
+✅ Test submitted and recorded
+🕒 System Time: ${new Date().toLocaleString()}
+📱 Device: ${isMobileDevice ? 'Mobile' : 'Desktop'}
+🔗 Test Version: Set Three - Full Screen Mobile`;
+
+      console.log('Sending Telegram message...');
+      
+      // Send to Telegram
+      const telegramResult = await sendToTelegram(telegramMessage);
+      
+      document.getElementById("loadingIndicator").style.display = "none";
+      
+      // Show Telegram status
+      const statusElement = document.getElementById("telegramStatus");
+      statusElement.style.display = "block";
+      
+      if (telegramResult.success) {
+        statusElement.textContent = "✅ Test submitted successfully! Telegram message sent.";
+        statusElement.className = "telegram-status success";
+        console.log('✅ Telegram message sent successfully!');
+      } else {
+        statusElement.textContent = `⚠️ Test submitted but failed to send to Telegram: ${telegramResult.error}`;
+        statusElement.className = "telegram-status error";
+        console.error('❌ Telegram failed:', telegramResult.error);
+      }
+      
+      // Generate PDF
+      downloadPDF(task1Answer, task2Answer, task1WordCount, task2WordCount);
+      
+      isTestActive = false;
+      isSubmitted = true;
+      clearInterval(timer);
+      
+      document.getElementById("submitButton").style.display = "none";
+      document.getElementById("reviewButton").style.display = "block";
+      document.getElementById("submissionConfirmation").style.display = "block";
+      
+      document.getElementById("textarea1").disabled = true;
+      document.getElementById("textarea2").disabled = true;
+    }
+
+    function reviewTest() {
+      alert("You are now in review mode. You can read your answers but cannot make changes.");
+    }
+
+    function downloadPDF(task1Answer, task2Answer, task1WordCount, task2WordCount) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Header
+      doc.setFontSize(16);
+      doc.text("IELTS Writing Test - Set Three", 20, 20);
+      doc.setFontSize(12);
+      doc.text(`Teacher: ${teacherName}`, 20, 35);
+      doc.text(`Student: ${studentName}`, 20, 45);
+      doc.text(`Group: ${groupName}`, 20, 55);
+      doc.text(`Timestamp: ${new Date().toLocaleString()}`, 20, 65);
+      doc.text(`Violations: ${violations.total}`, 20, 75);
+      doc.text(`Device: ${isMobileDevice ? (isLandscape ? 'Mobile (Landscape)' : 'Mobile (Portrait)') : 'Desktop'}`, 20, 85);
+
+      // Task 1
+      doc.setFontSize(14);
+      doc.text("Writing Task 1 - Chart Description", 20, 100);
+      doc.setFontSize(12);
+      doc.text(`Word Count: ${task1WordCount}`, 20, 110);
+      
+      doc.text("Student's Answer:", 20, 125);
+      const answer1Lines = doc.splitTextToSize(task1Answer, 170);
+      doc.text(answer1Lines, 20, 135);
+
+      // Task 2 (new page)
+      doc.addPage();
+      doc.setFontSize(14);
+      doc.text("Writing Task 2 - Essay", 20, 20);
+      doc.setFontSize(12);
+      doc.text(`Word Count: ${task2WordCount}`, 20, 30);
+      
+      doc.text("Student's Answer:", 20, 45);
+      const answer2Lines = doc.splitTextToSize(task2Answer, 170);
+      doc.text(answer2Lines, 20, 55);
+
+      // Save PDF
+      doc.save(`IELTS_Writing_${studentName.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
+    }
+
+    function forceSubmit() {
+      isTestActive = false;
+      violationDetected = false;
+      document.getElementById("warningModal").style.display = "none";
+      submitTest();
+      clearInterval(timer);
+    }
+
+    window.onload = initializePage;
+    
+    // Handle window resize for mobile
+    window.addEventListener('resize', function() {
+      if (isMobileDevice) {
+        isLandscape = window.innerWidth > window.innerHeight;
+        
+        // Adjust layout based on orientation
+        if (isLandscape) {
+          // Landscape mode
+          const textareas = document.querySelectorAll('textarea');
+          textareas.forEach(textarea => {
+            textarea.style.height = 'calc(100% - 40px)';
+          });
+        } else {
+          // Portrait mode
+          const textareas = document.querySelectorAll('textarea');
+          textareas.forEach(textarea => {
+            textarea.style.height = 'calc(100% - 40px)';
+          });
+        }
+      }
+    });
+  </script>
 </body>
 </html>
