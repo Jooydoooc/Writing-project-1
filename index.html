@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IELTS Writing Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#fff; }
+    .header { display:flex; justify-content:space-between; padding:15px 30px; border-bottom:1px solid #ccc; }
+    .timer { font-weight:bold; color:#d32f2f; }
+    .container { display:flex; height: calc(100vh - 120px); }
+    .left, .right { width:50%; padding:20px; overflow-y:auto; }
+    textarea { width:100%; height:100%; font-size:16px; padding:10px; }
+    .tabs { display:flex; }
+    .tabs button { flex:1; padding:10px; font-weight:bold; cursor:pointer; }
+    .tabs button.active { background:#ccc; }
+    .submit { padding:12px 30px; margin:15px auto; display:block; font-size:16px; }
+    .image-container img { width:100%; border:1px solid #ccc; margin-top:10px; }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <div id="studentInfo"></div>
+  <div class="timer" id="timer">60:00</div>
+</div>
+
+<div class="tabs">
+  <button class="active" onclick="switchTask(1)" id="tab1">Task 1</button>
+  <button onclick="switchTask(2)" id="tab2">Task 2</button>
+</div>
+
+<div class="container" id="task1">
+  <div class="left">
+    <h3>Writing Task 1</h3>
+    <p><strong>The chart shows the water levels in reservoirs of six cities in Australia in October 2009 and October 2010.</strong></p>
+    <p><em>Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</em></p>
+    <p>Write at least 150 words.</p>
+
+    <div class="image-container">
+      <img src="https://i.ibb.co/Fk3qNy96/2025-12-15-10-29-41.jpg">
+    </div>
+  </div>
+
+  <div class="right">
+    <textarea id="answer1" placeholder="Write Task 1 here..."></textarea>
+  </div>
+</div>
+
+<div class="container" id="task2" style="display:none;">
+  <div class="left">
+    <h3>Writing Task 2</h3>
+    <p><strong>Some people believe that competitive sports, both team and individual, have no place in the school curriculum.  
+    To what extent do you agree or disagree?</strong></p>
+    <p>Write at least 250 words.</p>
+  </div>
+
+  <div class="right">
+    <textarea id="answer2" placeholder="Write Task 2 here..."></textarea>
+  </div>
+</div>
+
+<button class="submit" onclick="submitTest()">Submit</button>
+
+<script>
+let time = 3600;
+let timer = setInterval(() => {
+  time--;
+  const m = Math.floor(time/60);
+  const s = time%60;
+  document.getElementById("timer").textContent =
+    `${m}:${s<10?"0":""}${s}`;
+  if(time<=0){ clearInterval(timer); submitTest(); }
+},1000);
+
+function switchTask(n){
+  document.getElementById("task1").style.display = n===1?"flex":"none";
+  document.getElementById("task2").style.display = n===2?"flex":"none";
+  document.getElementById("tab1").classList.toggle("active",n===1);
+  document.getElementById("tab2").classList.toggle("active",n===2);
+}
+
+async function submitTest(){
+  const msg = `
+📝 IELTS WRITING SUBMISSION
+
+TASK 1:
+${document.getElementById("answer1").value}
+
+TASK 2:
+${document.getElementById("answer2").value}
+
+⏱ Time left: ${time}s
+`;
+
+  await fetch("/api/telegram",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ message: msg })
+  });
+
+  alert("Submitted successfully!");
+}
+</script>
+
+</body>
+</html>
