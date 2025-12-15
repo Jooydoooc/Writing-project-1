@@ -1,19 +1,5 @@
 {
-  "name": "ielts-writing-test",
+  "name": "ielts-writing-set-three",
   "version": "1.0.0",
-  "description": "IELTS Writing Test Platform with Anti-Cheating Features",
-  "main": "index.html",
-  "scripts": {
-    "start": "serve .",
-    "build": "echo 'No build required for static site'"
-  },
-  "dependencies": {
-    "node-telegram-bot-api": "^0.61.0"
-  },
-  "devDependencies": {
-    "serve": "^14.2.0"
-  },
-  "engines": {
-    "node": "22.x"
-  }
+  "private": true
 }
